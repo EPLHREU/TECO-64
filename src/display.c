@@ -1076,7 +1076,7 @@ void reset_colors(void)
 
     (void)init_pair(CMD,    COLOR_WHITE, -1);
     (void)init_pair(EDIT,   COLOR_WHITE, -1);
-    (void)init_pair(STATUS, COLOR_WHITE, -1);
+    (void)init_pair(STATUS, COLOR_MAGENTA, -1);
 
 #endif
 
