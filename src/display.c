@@ -1070,11 +1070,13 @@ void reset_colors(void)
         (void)init_color(COLOR_WHITE,   SATMAX, SATMAX, SATMAX);
     }
 
-    (void)assume_default_colors(COLOR_BLACK, COLOR_WHITE);
+    (void)use_default_colors();
 
-    (void)init_pair(CMD,    COLOR_BLACK, COLOR_WHITE);
-    (void)init_pair(EDIT,   COLOR_BLACK, COLOR_WHITE);
-    (void)init_pair(STATUS, COLOR_WHITE, COLOR_BLACK);
+    (void)assume_default_colors(COLOR_WHITE, -1);
+
+    (void)init_pair(CMD,    COLOR_WHITE, -1);
+    (void)init_pair(EDIT,   COLOR_WHITE, -1);
+    (void)init_pair(STATUS, COLOR_WHITE, -1);
 
 #endif
 
