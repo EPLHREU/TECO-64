@@ -124,69 +124,59 @@ static void getsize(void)
 
 void init_term(void)
 {
-    static bool init_set = false;       // Initialization already done if true
+#if     !defined(__DECC)
 
-    // The following only needs to be executed once, regardless
-    // how many times terminal initialization is done.
-
-    if (!init_set)
+    if (!f.e0.i_redir)
     {
-        init_set = true;
-
-#if     !defined(__DECC)
-
-        if (!f.e0.i_redir)
-        {
-            (void)tcgetattr(fileno(stdin), &saved_mode);
-        }
+        (void)tcgetattr(fileno(stdin), &saved_mode);
+    }
 
 #endif
 
-        struct sigaction sa;
+    struct sigaction sa;
 
-        sa.sa_handler = sig_handler;    // Set up general handler
-        sa.sa_flags = 0;
+    sa.sa_handler = sig_handler;    // Set up general handler
+    sa.sa_flags = 0;
 
-        (void)sigfillset(&sa.sa_mask);  // Block all signals in handler
+    (void)sigfillset(&sa.sa_mask);  // Block all signals in handler
 
-        (void)sigaction(SIGINT, &sa, NULL);
-        (void)sigaction(SIGABRT, &sa, NULL); // (mostly for assertion failures)
+    (void)sigaction(SIGINT, &sa, NULL);
+    (void)sigaction(SIGABRT, &sa, NULL); // (mostly for assertion failures)
 
-#if     !defined(__DECC)
+#if !defined(__DECC)
 
-        sa.sa_flags = SA_RESTART;       // Restarts are okay for screen resizing
+    sa.sa_flags = SA_RESTART;       // Restarts are okay for screen resizing
 
 #endif
 
-        (void)sigaction(SIGWINCH, &sa, NULL);
+    (void)sigaction(SIGWINCH, &sa, NULL);
 
-        (void)setvbuf(stdout, NULL, _IONBF, 0uL);
+    (void)setvbuf(stdout, NULL, _IONBF, 0uL);
 
-        f.et.rubout    = true;          // Process DEL and ^U in scope mode
-        f.et.lower     = true;          // Terminal can read lower case
+    f.et.rubout    = true;          // Process DEL and ^U in scope mode
+    f.et.lower     = true;          // Terminal can read lower case
 
-#if     defined(DISPLAY_MODE)
+#if defined(DISPLAY_MODE)
 
-        f.et.scope     = true;          // Terminal is a scope
+    f.et.scope     = true;          // Terminal is a scope
 
 #else
 
-        f.et.scope     = false;         // Terminal is not a scope
+    f.et.scope     = false;         // Terminal is not a scope
 
 #endif
 
-        f.et.eightbit  = true;          // Terminal can use 8-bit characters
+    f.et.eightbit  = true;          // Terminal can use 8-bit characters
 
-        getsize();
+    getsize();
 
-        if (key_name != NULL)
+    if (key_name != NULL)
+    {
+        if ((key_fp = fopen(key_name, "w+")) != NULL)
         {
-            if ((key_fp = fopen(key_name, "w+")) != NULL)
-            {
-                // Write output immediately and do not buffer.
+            // Write output immediately and do not buffer.
 
-                (void)setvbuf(key_fp, NULL, _IONBF, 0uL);
-            }
+            (void)setvbuf(key_fp, NULL, _IONBF, 0uL);
         }
     }
 
